@@ -1,29 +1,26 @@
 package com.example.atividade_docker.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.atividade_docker.dto.LoginRequest;
-import com.example.atividade_docker.dto.NotaRequest;
+import com.example.atividade_docker.model.Usuario;
+import com.example.atividade_docker.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api") // todas as rotas começam com /api
-@CrossOrigin(origins = "*") // libera CORS para testes (se o front estiver rodando em porta diferente)
+@RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @PostMapping("/login")
-    public ResponseEntity<Map<String,Object>> login(@RequestBody LoginRequest req) {
-        if ("1234".equals(req.password())) {
-            return ResponseEntity.ok(Map.of("success", true, "message", "Logado com sucesso!"));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                 .body(Map.of("success", false, "message", "Credenciais inválidas"));
-        }
+    public ResponseEntity<Map<String,Object>> login(@RequestBody Usuario req) {
+        System.out.println("Recebido: " + req.getEmail() + " - " + req.getSenha()); // <-- Adicione esta linha
+        usuarioRepository.save(req);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Logado com sucesso!"));
     }
 
-    @PostMapping("/nota")
-    public ResponseEntity<Map<String,Object>> nota(@RequestBody NotaRequest req) {
-        return ResponseEntity.ok(Map.of("received", req.notaMaxima()));
-    }
+    // ...mantenha o método /nota se precisar...
 }
